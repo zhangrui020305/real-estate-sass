@@ -1,55 +1,96 @@
-"use client"; // 必须标记为客户端组件，因为我们要处理 onClick
+"use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation"; // 用于跳转
-import { loginApi } from "@/api/user"; // 引入上面的 API
+import { Sidebar } from "@/components/Sidebar";
+import { Header } from "@/components/Header";
+import { StatCard } from "@/components/StatCard";
+import { PropertyViewsChart } from "@/components/Charts/PropertyViewsChart";
+import { LeadSourceChart } from "@/components/Charts/LeadSourceChart";
+import { RecentActivities } from "@/components/RecentActivities";
+import { Button } from "@/components/ui/button";
 
-export default function LoginPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+const activeListingsData = [
+  { value: 400 },
+  { value: 300 },
+  { value: 550 },
+  { value: 450 },
+  { value: 650 },
+  { value: 600 },
+  { value: 700 },
+];
 
-  const handleLogin = async () => {
-    try {
-      // 1. 调用接口
-      const res = await loginApi({ username, password });
+const leadsData = [
+  { value: 200 },
+  { value: 250 },
+  { value: 220 },
+  { value: 300 },
+  { value: 280 },
+  { value: 350 },
+  { value: 320 },
+];
 
-      // 2. 拿到结果 (res已经是后端返回的 data 了，因为在拦截器里解包过)
-      console.log("登录成功:", res);
+const revenueData = [
+  { value: 1000 },
+  { value: 1200 },
+  { value: 1100 },
+  { value: 1300 },
+  { value: 1250 },
+  { value: 1400 },
+  { value: 1350 },
+];
 
-      // 3. 存储 Token (通常存 localStorage 或 Cookie)
-      localStorage.setItem("token", res.token);
-
-      // 4. 跳转首页
-      router.push("/dashboard");
-    } catch (error) {
-      console.error("登录失败:", error);
-      alert("账号或密码错误");
-    }
-  };
-
+export default function Dashboard() {
   return (
-    <div className="p-10 flex flex-col gap-4 max-w-sm">
-      <input
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        placeholder="用户名"
-        className="border p-2 rounded text-black"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="密码"
-        className="border p-2 rounded text-black"
-      />
-      <button
-        onClick={handleLogin}
-        className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-      >
-        登录
-      </button>
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <Sidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-7xl mx-auto space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                 <h1 className="text-2xl font-bold tracking-tight">Welcome back, Agent Smith,</h1>
+                 <p className="text-sm text-gray-500">Welcome to real estate SaaS platform UI design.</p>
+              </div>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                + Dashboard
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <StatCard
+                title="Active Listings"
+                value="1,245"
+                change="12%"
+                trend="up"
+                data={activeListingsData}
+              />
+              <StatCard
+                title="Leads this Month"
+                value="350"
+                change="5%"
+                trend="up"
+                data={leadsData}
+              />
+              <StatCard
+                title="Revenue YTD"
+                value="$1.2M"
+                change="18%"
+                trend="up"
+                data={revenueData}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+               <PropertyViewsChart />
+               <LeadSourceChart />
+            </div>
+
+            <div className="grid grid-cols-1">
+               <RecentActivities />
+            </div>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
